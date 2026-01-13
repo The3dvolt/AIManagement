@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CreateWebWorkerMLCEngine } from "@mlc-ai/web-llm";
 import { initDB } from './tools';
 import { PRIVACY_COMMITMENT } from './privacy';
-import { EmailService } from './utils/EmailService';
+import { EmailService } from './EmailService';
 
 // Constants matching main.ts
 const MODEL_TOOLS = "gemma-2b-it-q4f32_1-MLC";

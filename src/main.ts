@@ -3,7 +3,7 @@ import { CreateWebWorkerMLCEngine, MLCEngine } from "@mlc-ai/web-llm";
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { SetupWizard } from './SetupWizard';
-import { generateUserManual } from "./utils/DocGenerator";
+import { generateUserManual } from "./DocGenerator";
 import { ManualViewer } from "./ManualViewer";
 import { tools, compose_email, log_call, update_budget, initDB, processUpload, queryKnowledgeBase } from "./tools";
 import { PRIVACY_COMMITMENT } from "./privacy";

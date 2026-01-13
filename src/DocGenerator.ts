@@ -1,4 +1,4 @@
-import { tools, getStoredManual, storeManual } from "../tools";
+import { tools, getStoredManual, storeManual } from "./tools";
 
 // Simulating schema.ts content based on tools.ts initDB
 const DB_SCHEMA = `
