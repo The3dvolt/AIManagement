@@ -56,33 +56,33 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
 
     const downloadModels = async () => {
         const workerUrl = new URL('./worker.ts', import.meta.url).href;
-        
-        // Download Chat Model (Gemma-2B)
-        setProgress("Downloading Chat Model (Gemma-2B)...");
-        await CreateWebWorkerMLCEngine(
-            new Worker(workerUrl, { type: 'module' }),
-            MODEL_CHAT,
-            {
-                initProgressCallback: (report: any) => {
-                    setDownloadPercent(Math.round(report.progress * 100));
-                    setProgress(`Downloading Chat Model: ${report.text}`);
-                }
-            }
-        );
 
-        // Download Tools Model (FunctionGemma proxy)
-        setDownloadPercent(0);
-        setProgress("Downloading Function Model (FunctionGemma-270M)...");
-        await CreateWebWorkerMLCEngine(
-            new Worker(workerUrl, { type: 'module' }),
-            MODEL_TOOLS,
-            {
-                initProgressCallback: (report: any) => {
-                    setDownloadPercent(Math.round(report.progress * 100));
-                    setProgress(`Downloading Function Model: ${report.text}`);
+        const modelsToDownload = [
+            { name: "Chat Model (Gemma-2B)", id: MODEL_CHAT },
+            { name: "Function Model", id: MODEL_TOOLS }
+        ];
+
+        // Use a Set to only download unique model IDs, preventing re-downloads of the same model.
+        const uniqueModelIds = [...new Set(modelsToDownload.map(m => m.id))];
+
+        for (const modelId of uniqueModelIds) {
+            // Find the first model spec that uses this ID for UI text
+            const modelSpec = modelsToDownload.find(m => m.id === modelId)!;
+            
+            setDownloadPercent(0);
+            setProgress(`Downloading ${modelSpec.name}...`);
+            
+            await CreateWebWorkerMLCEngine(
+                new Worker(workerUrl, { type: 'module' }),
+                modelId,
+                {
+                    initProgressCallback: (report: any) => {
+                        setDownloadPercent(Math.round(report.progress * 100));
+                        setProgress(`Downloading ${modelSpec.name}: ${report.text}`);
+                    }
                 }
-            }
-        );
+            );
+        }
     };
 
     const handleFinish = async () => {
