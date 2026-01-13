@@ -6,7 +6,7 @@ import { EmailService } from './EmailService';
 
 // Constants matching main.ts
 const MODEL_TOOLS = "gemma-2b-it-q4f32_1-MLC";
-const MODEL_CHAT = "gemma-2-2b-it-q4f32_1-MLC";
+const MODEL_CHAT = "gemma-2b-it-q4f32_1-MLC";
 
 interface SetupWizardProps {
     onComplete: () => void;
@@ -57,8 +57,8 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     const downloadModels = async () => {
         const workerUrl = new URL('./worker.ts', import.meta.url).href;
         
-        // Download Chat Model (Gemma-3-4B proxy)
-        setProgress("Downloading Chat Model (Gemma-3-4B)...");
+        // Download Chat Model (Gemma-2B)
+        setProgress("Downloading Chat Model (Gemma-2B)...");
         await CreateWebWorkerMLCEngine(
             new Worker(workerUrl, { type: 'module' }),
             MODEL_CHAT,
