@@ -98,6 +98,10 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
         onComplete();
     };
 
+    const handleGuest = () => {
+        onComplete();
+    };
+
     if (error) {
         return (
             <div style={{ padding: '2rem', color: 'red', textAlign: 'center' }}>
@@ -178,22 +182,40 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                             </label>
                         </div>
 
-                        <button 
-                            onClick={handleFinish}
-                            disabled={isFinalizing}
-                            style={{
-                                padding: '10px 20px',
-                                fontSize: '16px',
-                                cursor: 'pointer',
-                                backgroundColor: '#000',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '4px',
-                                opacity: isFinalizing ? 0.7 : 1
-                            }}
-                        >
-                            {isFinalizing ? 'Finalizing...' : 'Launch App'}
-                        </button>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                            <button 
+                                onClick={handleFinish}
+                                disabled={isFinalizing}
+                                style={{
+                                    padding: '10px 20px',
+                                    fontSize: '16px',
+                                    cursor: 'pointer',
+                                    backgroundColor: '#000',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    opacity: isFinalizing ? 0.7 : 1
+                                }}
+                            >
+                                {isFinalizing ? 'Finalizing...' : 'Launch App'}
+                            </button>
+                            <button 
+                                onClick={handleGuest}
+                                disabled={isFinalizing}
+                                style={{
+                                    padding: '10px 20px',
+                                    fontSize: '16px',
+                                    cursor: 'pointer',
+                                    backgroundColor: '#fff',
+                                    color: '#555',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '4px',
+                                    opacity: isFinalizing ? 0.7 : 1
+                                }}
+                            >
+                                Continue as Guest
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
