@@ -1,5 +1,5 @@
 
-import { CreateWebWorkerMLCEngine, MLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+import { CreateWebWorkerMLCEngine, MLCEngine } from "@mlc-ai/web-llm";
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { SetupWizard } from './SetupWizard';
