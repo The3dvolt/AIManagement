@@ -7,6 +7,7 @@ import { generateUserManual } from "./DocGenerator";
 import { ManualViewer } from "./ManualViewer";
 import { tools, compose_email, log_call, update_budget, initDB, processUpload, queryKnowledgeBase } from "./tools";
 import { PRIVACY_COMMITMENT } from "./privacy";
+import MLCEngineWorker from './worker.ts?worker';
 
 const MODEL_TOOLS = "gemma-2b-it-q4f32_1-MLC";
 const MODEL_CHAT = "gemma-2b-it-q4f32_1-MLC";
@@ -38,10 +39,7 @@ if (!appInitialized) {
 async function startApp() {
 // Engine 1: Tools & Function Calling
 const toolEngine = await CreateWebWorkerMLCEngine(
-    new Worker(
-        new URL('./worker.ts', import.meta.url).href,
-        { type: 'module' }
-    ),
+    new MLCEngineWorker(),
     MODEL_TOOLS,
     {
         initProgressCallback: (progress: any) => {
@@ -52,10 +50,7 @@ const toolEngine = await CreateWebWorkerMLCEngine(
 
 // Engine 2: Chat & RAG
 const chatEngine = await CreateWebWorkerMLCEngine(
-    new Worker(
-        new URL('./worker.ts', import.meta.url).href,
-        { type: 'module' }
-    ),
+    new MLCEngineWorker(),
     MODEL_CHAT,
     {
         initProgressCallback: (progress: any) => {
@@ -66,10 +61,7 @@ const chatEngine = await CreateWebWorkerMLCEngine(
 
 // Engine 3: Vision
 const visionEngine = await CreateWebWorkerMLCEngine(
-    new Worker(
-        new URL('./worker.ts', import.meta.url).href,
-        { type: 'module' }
-    ),
+    new MLCEngineWorker(),
     MODEL_VISION,
     {
         initProgressCallback: (progress: any) => {

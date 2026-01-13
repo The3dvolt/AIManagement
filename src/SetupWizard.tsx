@@ -3,6 +3,7 @@ import { CreateWebWorkerMLCEngine } from "@mlc-ai/web-llm";
 import { initDB } from './tools';
 import { PRIVACY_COMMITMENT } from './privacy';
 import { EmailService } from './EmailService';
+import MLCEngineWorker from './worker.ts?worker';
 
 // Constants matching main.ts
 const MODEL_TOOLS = "gemma-2b-it-q4f32_1-MLC";
@@ -55,8 +56,6 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     };
 
     const downloadModels = async () => {
-        const workerUrl = new URL('./worker.ts', import.meta.url).href;
-
         const modelsToDownload = [
             { name: "Chat Model (Gemma-2B)", id: MODEL_CHAT },
             { name: "Function Model", id: MODEL_TOOLS }
@@ -73,7 +72,7 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
             setProgress(`Downloading ${modelSpec.name}...`);
             
             await CreateWebWorkerMLCEngine(
-                new Worker(workerUrl, { type: 'module' }),
+                new MLCEngineWorker(),
                 modelId,
                 {
                     initProgressCallback: (report: any) => {
