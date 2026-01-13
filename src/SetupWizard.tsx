@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CreateWebWorkerMLCEngine } from "@mlc-ai/web-llm";
 import { initDB } from './tools';
 import { PRIVACY_COMMITMENT } from './privacy';
+import { EmailService } from './utils/EmailService';
 
 // Constants matching main.ts
 const MODEL_TOOLS = "gemma-2b-it-q4f32_1-MLC";
@@ -16,6 +17,12 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     const [error, setError] = useState<string | null>(null);
     const [progress, setProgress] = useState<string>("");
     const [downloadPercent, setDownloadPercent] = useState(0);
+    
+    // User Data for Signup Flow
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [isPro, setIsPro] = useState(false);
+    const [isFinalizing, setIsFinalizing] = useState(false);
 
     useEffect(() => {
         runStep(step);
@@ -56,7 +63,7 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
             new Worker(workerUrl, { type: 'module' }),
             MODEL_CHAT,
             {
-                initProgressCallback: (report) => {
+                initProgressCallback: (report: any) => {
                     setDownloadPercent(Math.round(report.progress * 100));
                     setProgress(`Downloading Chat Model: ${report.text}`);
                 }
@@ -70,12 +77,26 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
             new Worker(workerUrl, { type: 'module' }),
             MODEL_TOOLS,
             {
-                initProgressCallback: (report) => {
+                initProgressCallback: (report: any) => {
                     setDownloadPercent(Math.round(report.progress * 100));
                     setProgress(`Downloading Function Model: ${report.text}`);
                 }
             }
         );
+    };
+
+    const handleFinish = async () => {
+        setIsFinalizing(true);
+        try {
+            if (email && name) {
+                setProgress("Sending Welcome Email...");
+                await EmailService.sendWelcome(email, name, isPro);
+            }
+        } catch (e) {
+            console.error("Failed to send welcome email:", e);
+            // Proceed even if email fails (e.g. invalid API key in dev)
+        }
+        onComplete();
     };
 
     if (error) {
@@ -125,8 +146,42 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     <div style={{ textAlign: 'center' }}>
                         <h2 style={{ color: '#4caf50' }}>Setup Complete!</h2>
                         <p>Your local AI environment is ready.</p>
+                        
+                        <div style={{ textAlign: 'left', margin: '20px 0', padding: '15px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '8px' }}>
+                            <h4 style={{ marginTop: 0 }}>Finalize Account</h4>
+                            <label style={{ display: 'block', marginBottom: '10px' }}>
+                                Name:
+                                <input 
+                                    type="text" 
+                                    value={name} 
+                                    onChange={(e) => setName(e.target.value)}
+                                    style={{ width: '100%', padding: '8px', marginTop: '5px', boxSizing: 'border-box' }}
+                                    placeholder="Enter your name"
+                                />
+                            </label>
+                            <label style={{ display: 'block', marginBottom: '10px' }}>
+                                Email:
+                                <input 
+                                    type="email" 
+                                    value={email} 
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    style={{ width: '100%', padding: '8px', marginTop: '5px', boxSizing: 'border-box' }}
+                                    placeholder="Enter your email"
+                                />
+                            </label>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                <input 
+                                    type="checkbox" 
+                                    checked={isPro} 
+                                    onChange={(e) => setIsPro(e.target.checked)}
+                                />
+                                <span>Enable Pro Features (Demo)</span>
+                            </label>
+                        </div>
+
                         <button 
-                            onClick={onComplete}
+                            onClick={handleFinish}
+                            disabled={isFinalizing}
                             style={{
                                 padding: '10px 20px',
                                 fontSize: '16px',
@@ -134,10 +189,11 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                                 backgroundColor: '#000',
                                 color: '#fff',
                                 border: 'none',
-                                borderRadius: '4px'
+                                borderRadius: '4px',
+                                opacity: isFinalizing ? 0.7 : 1
                             }}
                         >
-                            Launch App
+                            {isFinalizing ? 'Finalizing...' : 'Launch App'}
                         </button>
                     </div>
                 )}

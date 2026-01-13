@@ -1,11 +1,11 @@
-import initSqlJs, { Database } from 'sql.js';
+import initSqlJs from 'sql.js';
 import Papa from 'papaparse';
 import * as pdfjsLib from 'pdfjs-dist';
 
 // Initialize PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
-let db: Database | null = null;
+let db: any | null = null;
 let dbReadyPromise: Promise<void> | null = null;
 
 // Local Tools
@@ -98,7 +98,7 @@ export async function initDB() {
 
     dbReadyPromise = (async () => {
         const SQL = await initSqlJs({
-            locateFile: file => `https://sql.js.org/dist/${file}`
+            locateFile: (file: string) => `https://sql.js.org/dist/${file}`
         });
         db = new SQL.Database();
         // Create tables
@@ -107,6 +107,8 @@ export async function initDB() {
         db.run("CREATE TABLE IF NOT EXISTS business_budget (category TEXT PRIMARY KEY, amount REAL);");
         // RAG Table
         db.run("CREATE TABLE IF NOT EXISTS knowledge_base (id INTEGER PRIMARY KEY, content TEXT, source TEXT, type TEXT, timestamp TEXT);");
+        // System Logs for Manual Persistence
+        db.run("CREATE TABLE IF NOT EXISTS system_logs (id INTEGER PRIMARY KEY, event_type TEXT, content TEXT, timestamp TEXT);");
         console.log("SQLite DB Initialized");
     })();
     return dbReadyPromise;
@@ -226,4 +228,25 @@ export function update_budget(budgetType: 'Family' | 'Business', category: strin
     writeStmt.run([category, newAmount]);
     writeStmt.free();
     return { success: true, message: `Updated ${budgetType} budget for ${category} to ${newAmount}.` };
+}
+
+// --- Manual Persistence ---
+
+export function getStoredManual(): string | null {
+    if (!db) return null;
+    const stmt = db.prepare("SELECT content FROM system_logs WHERE event_type = 'user_manual' ORDER BY id DESC LIMIT 1");
+    if (stmt.step()) {
+        const result = stmt.get();
+        stmt.free();
+        return result[0] as string;
+    }
+    stmt.free();
+    return null;
+}
+
+export function storeManual(htmlContent: string) {
+    if (!db) return;
+    const stmt = db.prepare("INSERT INTO system_logs (event_type, content, timestamp) VALUES (?, ?, ?)");
+    stmt.run(['user_manual', htmlContent, new Date().toISOString()]);
+    stmt.free();
 }

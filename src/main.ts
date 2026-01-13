@@ -3,6 +3,8 @@ import { CreateWebWorkerMLCEngine, MLCEngine } from "@mlc-ai/web-llm";
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { SetupWizard } from './SetupWizard';
+import { generateUserManual } from "./utils/DocGenerator";
+import { ManualViewer } from "./ManualViewer";
 import { tools, compose_email, log_call, update_budget, initDB, processUpload, queryKnowledgeBase } from "./tools";
 import { PRIVACY_COMMITMENT } from "./privacy";
 
@@ -43,7 +45,7 @@ const toolEngine = await CreateWebWorkerMLCEngine(
     ),
     MODEL_TOOLS,
     {
-        initProgressCallback: (progress) => {
+        initProgressCallback: (progress: any) => {
             console.log("Tool Engine Init:", progress);
         }
     }
@@ -57,7 +59,7 @@ const chatEngine = await CreateWebWorkerMLCEngine(
     ),
     MODEL_CHAT,
     {
-        initProgressCallback: (progress) => {
+        initProgressCallback: (progress: any) => {
             console.log("Chat Engine Init:", progress);
         }
     }
@@ -71,7 +73,7 @@ const visionEngine = await CreateWebWorkerMLCEngine(
     ),
     MODEL_VISION,
     {
-        initProgressCallback: (progress) => {
+        initProgressCallback: (progress: any) => {
             console.log("Vision Engine Init:", progress);
         }
     }
@@ -90,6 +92,7 @@ const canvasCapture = document.getElementById("canvas-capture") as HTMLCanvasEle
 const startCameraButton = document.getElementById("start-camera-button")!;
 const useIpCameraButton = document.getElementById("use-ip-camera-button")!;
 const ipCameraUrlInput = document.getElementById("ip-camera-url") as HTMLInputElement;
+const manualButton = document.getElementById("manual-button");
 
 // --- State ---
 let videoStream: MediaStream | null = null;
@@ -108,6 +111,26 @@ function appendMessage(sender: string, message: string, style: 'user' | 'ai' | '
 // Display Privacy Commitment on startup
 appendMessage("System", "Welcome to AI Management by 3dvolt.", "system");
 appendMessage("System", PRIVACY_COMMITMENT, "system");
+
+// Manual Generation Handler
+if (manualButton) {
+    manualButton.addEventListener("click", async () => {
+        appendMessage("System", "Generating User Manual... This may take a moment.", "system");
+        try {
+            const html = await generateUserManual(chatEngine);
+            const manualRoot = document.getElementById("manual-root");
+            if (manualRoot) {
+                const root = createRoot(manualRoot);
+                root.render(React.createElement(ManualViewer, {
+                    htmlContent: html,
+                    onClose: () => root.unmount()
+                }));
+            }
+        } catch (e: any) {
+            appendMessage("System", "Error generating manual: " + e.message, "system");
+        }
+    });
+}
 
 // File Upload Handler
 fileInput.addEventListener("change", async (e) => {
