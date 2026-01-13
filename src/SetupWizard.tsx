@@ -8,6 +8,7 @@ import MLCEngineWorker from './worker.ts?worker';
 // Constants matching main.ts
 const MODEL_TOOLS = "gemma-2b-it-q4f32_1-MLC";
 const MODEL_CHAT = "gemma-2b-it-q4f32_1-MLC";
+const MODEL_VISION = "gemma-2b-it-q4f16_1-MLC";
 
 interface SetupWizardProps {
     onComplete: () => void;
@@ -58,7 +59,8 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     const downloadModels = async () => {
         const modelsToDownload = [
             { name: "Chat Model (Gemma-2B)", id: MODEL_CHAT },
-            { name: "Function Model", id: MODEL_TOOLS }
+            { name: "Function Model", id: MODEL_TOOLS },
+            { name: "Vision Model", id: MODEL_VISION }
         ];
 
         // Use a Set to only download unique model IDs, preventing re-downloads of the same model.
