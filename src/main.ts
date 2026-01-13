@@ -37,6 +37,27 @@ if (!appInitialized) {
 }
 
 async function startApp() {
+    // Add Exit Button
+    const exitButton = document.createElement("button");
+    exitButton.textContent = "Exit";
+    exitButton.style.position = "fixed";
+    exitButton.style.top = "10px";
+    exitButton.style.right = "10px";
+    exitButton.style.zIndex = "2000";
+    exitButton.style.padding = "8px 12px";
+    exitButton.style.backgroundColor = "#d9534f";
+    exitButton.style.color = "white";
+    exitButton.style.border = "none";
+    exitButton.style.borderRadius = "4px";
+    exitButton.style.cursor = "pointer";
+    exitButton.onclick = () => {
+        if (confirm("Exit application? This will clear your session.")) {
+            localStorage.removeItem('app_initialized');
+            window.location.reload();
+        }
+    };
+    document.body.appendChild(exitButton);
+
 // Engine 1: Tools & Function Calling
 const toolEngine = await CreateWebWorkerMLCEngine(
     new MLCEngineWorker(),
@@ -293,4 +314,14 @@ document.getElementById("submit-button")?.addEventListener("click", async () => 
         }
     }
 });
+
+// Add Enter key support
+const promptInput = document.getElementById("prompt-input");
+if (promptInput) {
+    promptInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            document.getElementById("submit-button")?.click();
+        }
+    });
+}
 }
