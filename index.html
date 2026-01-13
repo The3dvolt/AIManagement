@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>FunctionGemma-270M Demo</h1>
+      
+      <div style="margin-bottom: 1rem; border: 1px solid #ccc; padding: 10px;">
+        <h3>Settings</h3>
+        <label>Mode: 
+            <select id="mode-select">
+                <option value="family">Family</option>
+                <option value="business">Business</option>
+            </select>
+        </label>
+        <br><br>
+        <label>Train AI (PDF/CSV): <input type="file" id="file-upload" /></label>
+      </div>
+
+      <div id="vision-component" style="margin-bottom: 1rem; border: 1px solid #ccc; padding: 10px;">
+        <h3>Vision (External Sources)</h3>
+        <p><small>Note: All processing happens in your browser. No data is sent to the cloud.</small></p>
+        <video id="video-feed" width="320" height="240" style="display:none; background: #333;"></video>
+        <img id="ip-camera-feed" width="320" height="240" style="display:none; background: #333;" crossorigin="anonymous" />
+        <canvas id="canvas-capture" width="320" height="240" style="display:none;"></canvas>
+        <div>
+            <button id="start-camera-button">Use Local Camera</button>
+            <input type="text" id="ip-camera-url" placeholder="MJPEG Stream URL" size="30" />
+            <button id="use-ip-camera-button">Use IP Camera</button>
+        </div>
+      </div>
+
+      <div id="chat-output" style="height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px;"></div>
+
+      <input type="text" id="prompt-input" placeholder="Enter your prompt" />
+      <button id="submit-button">Submit</button>
+      <h2>LocalDevLog</h2>
+      <pre id="log-output"></pre>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
