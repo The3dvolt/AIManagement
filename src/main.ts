@@ -1,5 +1,8 @@
 
 import { CreateWebWorkerMLCEngine, MLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { SetupWizard } from './SetupWizard';
 import { tools, compose_email, log_call, update_budget, initDB, processUpload, queryKnowledgeBase } from "./tools";
 import { PRIVACY_COMMITMENT } from "./privacy";
 
@@ -10,6 +13,28 @@ const MODEL_CHAT = "gemma-2-2b-it-q4f32_1-MLC";
 // Using a compatible Phi-3 vision model instead.
 const MODEL_VISION = "llava-phi-3-mini-q4f16_1-MLC";
 
+// Update App Title
+document.title = "AI Management by 3dvolt";
+
+const appInitialized = localStorage.getItem('app_initialized');
+
+if (!appInitialized) {
+    const rootElement = document.getElementById('app')!;
+    // Clear existing HTML content for the wizard
+    rootElement.innerHTML = ''; 
+    const root = createRoot(rootElement);
+    
+    root.render(React.createElement(SetupWizard, {
+        onComplete: () => {
+            localStorage.setItem('app_initialized', 'true');
+            window.location.reload();
+        }
+    }));
+} else {
+    startApp();
+}
+
+async function startApp() {
 // Engine 1: Tools & Function Calling
 const toolEngine = await CreateWebWorkerMLCEngine(
     new Worker(
@@ -81,6 +106,7 @@ function appendMessage(sender: string, message: string, style: 'user' | 'ai' | '
 }
 
 // Display Privacy Commitment on startup
+appendMessage("System", "Welcome to AI Management by 3dvolt.", "system");
 appendMessage("System", PRIVACY_COMMITMENT, "system");
 
 // File Upload Handler
@@ -253,3 +279,4 @@ document.getElementById("submit-button")?.addEventListener("click", async () => 
         }
     }
 });
+}
