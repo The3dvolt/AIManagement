@@ -13,7 +13,7 @@ const MODEL_TOOLS = "gemma-2b-it-q4f32_1-MLC";
 const MODEL_CHAT = "gemma-2b-it-q4f32_1-MLC";
 // NOTE: "Gemma 3" vision models are not yet available in WebLLM.
 // Using a compatible Phi-3 vision model instead.
-const MODEL_VISION = "llava-phi-3-mini-q4f16_1-MLC";
+const MODEL_VISION = "gemma-2b-it-q4f16_1-MLC";
 
 // Update App Title
 document.title = "AI Management by 3dvolt";
