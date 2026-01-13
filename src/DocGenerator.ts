@@ -1,4 +1,3 @@
-import { MLCEngine } from "@mlc-ai/web-llm";
 import { tools, getStoredManual, storeManual } from "../tools";
 
 // Simulating schema.ts content based on tools.ts initDB
@@ -10,7 +9,7 @@ Tables:
 4. knowledge_base (id, content, source, type, timestamp)
 `;
 
-export async function generateUserManual(engine: MLCEngine): Promise<string> {
+export async function generateUserManual(engine: any): Promise<string> {
     // 1. Check persistence
     const existing = getStoredManual();
     if (existing) {
@@ -19,7 +18,7 @@ export async function generateUserManual(engine: MLCEngine): Promise<string> {
     }
 
     // 2. Construct Prompt
-    const toolDescriptions = tools.map(t => 
+    const toolDescriptions = tools.map((t: any) => 
         `- ${t.function.name}: ${t.function.description} (Params: ${JSON.stringify(t.function.parameters)})`
     ).join("\n");
 
